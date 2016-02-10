@@ -1,17 +1,38 @@
 {
   "name": "orientjs-native",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./node_modules/mocha/bin/mocha  --reporter=spec -t 10000"
   },
   "gypfile": true,
   "dependencies": {
     "bindings": "~1.2.1",
     "nan": "^2.0.0"
   },
-  "author": "",
+  "devDependencies": {
+    "mocha": "^2.0.1",
+    "should": "~4.6.2",
+    "orientjs": "~2.1.0",
+    "expect.js": "~0.3.1",
+    "istanbul": "~0.2.7",
+    "jshint": "~2.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/orientechnologies/orientjs-native.git"
+  },
+  "author": {
+    "name": "Enrico Risa",
+    "email": "e.risa@orientdb.com"
+  },
+  "contributors": [
+    {
+      "name": "Emanuele Tagliaferri",
+      "email": "e.tagliaferri@orientdb.com"
+    }
+  ],
   "main": "./lib/index.js",
   "directories": {
     "lib": "./lib"

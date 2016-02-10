@@ -1,0 +1,59 @@
+var native = require('bindings')('deserializer');
+var RecordID = require('orientjs').RecordID;
+var Bag = require('orientjs').RIDBag;
+var should = require('should');
+
+describe("Serialization Native ", function () {
+
+
+  describe('Simple Document', function () {
+    var doc = {
+      "@class": "Person",
+      "name": "Jack",
+      "age": 30,
+      "active": true
+    }
+    it('should Serialize a simple document', function () {
+      this.serialized = native.serialize(doc);
+      should.exist(this.serialized);
+    });
+
+    it('should Deserialize a simple document', function () {
+      this.record = native.deserialize(this.serialized, RecordID, Bag, true);
+      this.record['@class'].should.equal(doc['@class']);
+      this.record.name.should.equal(doc.name);
+      this.record.age.should.equal(doc.age);
+      this.record.active.should.equal(doc.active);
+    });
+  })
+  describe('Complex Document', function () {
+
+
+    var doc = {
+      "@class": "Person",
+      "tags": ['blue','red'],
+      "link" : new RecordID("#5:0"),
+      "embedded" : {
+        "@class" : "Person",
+        "name" : "Frank"
+      }
+    }
+    it('should Serialize a simple document', function () {
+      this.serialized = native.serialize(doc);
+      should.exist(this.serialized);
+    });
+
+    it('should Deserialize a simple document', function () {
+      this.record = native.deserialize(this.serialized, RecordID, Bag, true);
+      this.record.tags.should.be.instanceof(Array)
+      this.record.tags.should.containDeep(doc.tags);
+      doc.tags.should.containDeep(this.record.tags);
+      this.record.link.should.be.instanceOf(RecordID);
+      this.record.link.cluster.should.equal(5);
+      this.record.link.position.should.equal(0);
+      this.record.embedded.should.be.instanceOf(Object);
+      this.record.embedded["@class"].should.equal(doc.embedded["@class"]);
+      this.record.embedded["name"].should.equal(doc.embedded["name"]);
+    });
+  })
+});
