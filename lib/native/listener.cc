@@ -64,7 +64,7 @@ void TrackerListener::doubleValue(double value) {
 }
 
 void TrackerListener::binaryValue(const char * value, int length) {
-	setValue(Nan::NewBuffer((char *)value,length).ToLocalChecked());
+	setValue(Nan::CopyBuffer((char *)value,length).ToLocalChecked());
 }
 
 void TrackerListener::dateValue(long long value) {

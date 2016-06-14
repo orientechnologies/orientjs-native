@@ -1,6 +1,6 @@
 {
   "name": "orientjs-native",
-  "version": "2.2.0-beta1",
+  "version": "2.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "devDependencies": {
     "mocha": "^2.0.1",
     "should": "~4.6.2",
-    "orientjs": "~2.1.0",
+    "orientjs": "~2.2.0",
     "expect.js": "~0.3.1",
     "istanbul": "~0.2.7",
     "jshint": "~2.5.0"
