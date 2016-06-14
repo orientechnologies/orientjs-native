@@ -5,7 +5,9 @@
 void writeMap(v8::Local<v8::Object> toWrite, Orient::RecordWriter & writer);
 void writeArray(v8::Local<v8::Array> toWrite, Orient::RecordWriter & writer);
 void writeValue(v8::Local<v8::Value> value, Orient::RecordWriter & writer);
-void writeBinary(v8::Local<v8::Uint8Array> toWrite, Orient::RecordWriter & writer);
+// not supported in node 0.x
+//
+//void writeBinary(v8::Local<v8::Uint8Array> toWrite, Orient::RecordWriter & writer);
 
 void writeObject(v8::Local<v8::Object> toWrite,Orient::RecordWriter & writer){
 
@@ -70,15 +72,19 @@ void writeValue(v8::Local<v8::Value> value, Orient::RecordWriter & writer) {
 	} else if (value->IsArray()){
 		writeArray(v8::Local<v8::Array>::Cast(value), writer);
 	}  else if (value->IsObject()){
-		if(value->IsUint8Array()){
-    			writeBinary(v8::Local<v8::Uint8Array>::Cast(value),writer);
-		}else {
+
+	//		if(value->IsUint8Array()){
+	//        			writeBinary(value,writer);
+	//    		}else {
+
 			v8::Local<v8::String> typeKey = Nan::New("@type").ToLocalChecked();
       			//TODO: check if replace with RecordID prototype check
 			v8::Local<v8::String> clusterKey = Nan::New("cluster").ToLocalChecked();
 			v8::Local<v8::String> positionKey = Nan::New("position").ToLocalChecked();
 			v8::Local<v8::String> dVal = Nan::New("d").ToLocalChecked();
 			v8::Local<v8::Object> obj = value->ToObject();
+
+			v8::String::Utf8Value val1(obj->ObjectProtoToString());
 			if(obj->Has(typeKey) && obj->Get(typeKey)->Equals(dVal)){
 				writeObject(obj,writer);
 			} else if(obj->Has(clusterKey) && obj->Has(positionKey)){
@@ -89,7 +95,6 @@ void writeValue(v8::Local<v8::Value> value, Orient::RecordWriter & writer) {
 			} else {
 				writeMap(obj,writer);
 			}
-		}
 	}
 }
 
@@ -119,10 +124,11 @@ void writeArray(v8::Local<v8::Array> toWrite, Orient::RecordWriter & writer){
 	writer.endCollection(Orient::EMBEDDEDLIST);
 }
 
+// Not supported in node 0.x
 
-void writeBinary(v8::Local<v8::Uint8Array> toWrite, Orient::RecordWriter & writer){
-
-	char* buf = node::Buffer::Data(toWrite->ToObject());
-	writer.binaryValue(buf,toWrite->Length());
-}
+//void writeBinary(v8::Local<v8::Uint8Array toWrite, Orient::RecordWriter & writer){
+//
+//	char* buf = node::Buffer::Data(toWrite->ToObject());
+//	writer.binaryValue(buf,toWrite->Length());
+//}
 
