@@ -19,7 +19,7 @@
 #       include <arpa/inet.h>
 #	include <libkern/OSByteOrder.h>
 
-#	define ntohll(x)  bOSSwapBigToHostInt64(x)
+#	define ntohll(x)  OSSwapBigToHostInt64(x)
 #	define htonll(x)  OSSwapHostToBigInt64(x)
 
 #elif defined(__OpenBSD__)
