@@ -240,7 +240,7 @@ void RecordWriter::doubleValue(double value) {
 	front->data.prepare(8);
 	int64_t i_val;
 	memcpy(&i_val, &value, 8);
-	i_val = htobe64(i_val);
+	i_val = htonll(i_val);
 	memcpy(front->data.content + front->data.cursor, &i_val, 8);
 }
 
@@ -346,19 +346,19 @@ void writeString(ContentBuffer & buffer, const char *string) {
 
 void writeFlat32Integer(ContentBuffer & buffer, int32_t value) {
 	buffer.prepare(4);
-	value = htobe32(value);
+	value = htonl(value);
 	memcpy(buffer.content + buffer.cursor, &value, 4);
 }
 
 void writeFlat16Integer(ContentBuffer & buffer, int16_t value) {
 	buffer.prepare(2);
-	value = htobe16(value);
+	value = htons(value);
 	memcpy(buffer.content + buffer.cursor, &value, 2);
 }
 
 void writeFlat64Integer(ContentBuffer & buffer, int64_t value) {
 	buffer.prepare(8);
-	value = htobe64(value);
+	value = htonll(value);
 	memcpy(buffer.content + buffer.cursor, &value, 8);
 }
 
