@@ -172,6 +172,15 @@ public:
 	 */
 	void ridBagTreeKey(long long fileId,long long pageIndex,long pageOffset);
 
+	/** Write a decima value.
+	 *
+	 * @param scale the scale of the decimal value.
+	 * @param bytes the bytes that rapresent the decimal value.
+	 * @param bytes_length the length ofthe bytes that represent the decimal.
+	 *
+	 */
+	void decimalValue(int scale, const char * bytes, int bytes_length);
+
 	/** Write a null value.
 	 *
 	 */

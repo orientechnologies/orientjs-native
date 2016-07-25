@@ -252,6 +252,15 @@ void RecordWriter::binaryValue(const char * value, int size) {
 	memcpy(front->data.content + front->data.cursor, value, size);
 }
 
+void RecordWriter::decimalValue(int scale, const char * bytes, int bytes_length) {
+	DocumentWriter *front = writer->nested.front();
+	front->writeTypeIfNeeded(DECIMAL);
+	writeFlat32Integer(front->data, scale);
+	writeFlat32Integer(front->data, bytes_length);
+	front->data.prepare(bytes_length);
+	memcpy(front->data.content + front->data.cursor, bytes, bytes_length);
+}
+
 void RecordWriter::linkValue(struct Link &link) {
 	DocumentWriter *front = writer->nested.front();
 	if (front->current.front() == LINKBAG) {

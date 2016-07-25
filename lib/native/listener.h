@@ -21,6 +21,7 @@ public:
 	virtual void floatValue(float value) ;
 	virtual void doubleValue(double value) ;
 	virtual void binaryValue(const char * value, int length) ;
+	virtual void decimalValue(int scale, const char *bytes, int bytes_length);
 	virtual void dateValue(long long value) ;
 	virtual void dateTimeValue(long long value) ;
 	virtual void linkValue(struct Link &value) ;
@@ -39,9 +40,10 @@ public:
 	std::list<v8::Local<v8::Object> > stack;
 	v8::Local<v8::Function > ridFactory;
 	v8::Local<v8::Function > bagFactory;
+	v8::Local<v8::Function > decimalFactory;
 	v8::Isolate *isolate;
 	bool useRidBag;
-	TrackerListener(v8::Local<v8::Function> ridFactory, v8::Local<v8::Function > bagFactory,bool useRidBag ) ;
+	TrackerListener(v8::Local<v8::Function> ridFactory, v8::Local<v8::Function > bagFactory,v8::Local<v8::Function > decimal ,bool useRidBag ) ;
 	~TrackerListener() ;
 
 };

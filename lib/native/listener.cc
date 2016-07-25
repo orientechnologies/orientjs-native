@@ -67,6 +67,18 @@ void TrackerListener::binaryValue(const char * value, int length) {
 	setValue(Nan::CopyBuffer((char *)value,length).ToLocalChecked());
 }
 
+void TrackerListener::decimalValue(int scale, const char *bytes, int bytes_length) {
+	
+	v8::Local<v8::Value> sca= Nan::New<v8::Number>(scale);
+	v8::Local<v8::Value> buffer= Nan::CopyBuffer((char *)bytes,bytes_length).ToLocalChecked();
+	v8::Local<v8::Value> handles[2];
+	handles[0] = buffer;
+	handles[1] = sca;
+	v8::Local<v8::Object> context = Nan::GetCurrentContext()->Global();
+	v8::Local<v8::Value> val = Nan::Call(decimalFactory,context,2,handles).ToLocalChecked();
+	setValue(val);
+}
+
 void TrackerListener::dateValue(long long value) {
 	setValue(Nan::New<v8::Date>(value).ToLocalChecked());
 }
@@ -142,7 +154,7 @@ void TrackerListener::setValue(v8::Handle<v8::Value> value) {
 }
 
 
-TrackerListener::TrackerListener(v8::Local<v8::Function> ridFactory ,v8::Local<v8::Function > bagFactory, bool useRidBag):ridFactory(ridFactory),bagFactory(bagFactory),useRidBag(useRidBag) {
+TrackerListener::TrackerListener(v8::Local<v8::Function> ridFactory ,v8::Local<v8::Function > bagFactory, v8::Local<v8::Function > decimalFactory, bool useRidBag):ridFactory(ridFactory),bagFactory(bagFactory),decimalFactory(decimalFactory),useRidBag(useRidBag) {
 }
 
 TrackerListener::~TrackerListener() {

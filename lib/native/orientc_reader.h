@@ -181,6 +181,17 @@ public:
 	 */
 	virtual void linkValue(struct Link & value)=0;
 
+	/**
+	 * Called each time is found a decimal value.
+	 *
+	 *
+	 * @param scale the scale of the decimal value.
+	 * @param bytes that rapresent the decimal value
+	 * @param bytes_length the length of the bytes that represent the value.
+	 *
+	 */
+	virtual void decimalValue(int scale , const char * bytes, int bytes_length)=0;
+
 	/** Called each time is found a ridbag tree value.
 	 *
 	 * @param fileId the tree fileId.

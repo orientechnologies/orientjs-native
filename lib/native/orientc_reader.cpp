@@ -34,7 +34,7 @@ void RecordParser::parse(const unsigned char * content, int content_size, Record
 
 void readDocument(ContentBuffer &reader, RecordParseListener & listener) {
 	int64_t class_size = readVarint(reader);
-	if (class_size != 0) {
+	if (class_size > 0) {
 		reader.prepare(class_size);
 		char * class_name = (char *) reader.content + reader.cursor;
 		listener.startDocument(class_name, class_size);
@@ -171,6 +171,12 @@ void readSimpleValue(ContentBuffer &reader, OType type, RecordParseListener & li
 		readValueRidbag(reader, listener);
 	}
 		break;
+	case DECIMAL : {
+		int32_t scale = readFlat32Integer(reader);
+		int32_t value_size = readFlat32Integer(reader);
+		reader.prepare(value_size);
+		listener.decimalValue(scale, (char *) reader.content + reader.cursor, value_size);
+	}
 	default:
 		break;
 	}
