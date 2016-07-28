@@ -2,6 +2,7 @@ var native = require('bindings')('deserializer');
 var RecordID = require('orientjs').RecordID;
 var Bag = require('orientjs').RIDBag;
 var should = require('should');
+var fs = require('fs');
 
 describe("Serialization Native ", function () {
 
@@ -62,5 +63,20 @@ describe("Serialization Native ", function () {
       this.record.embedded["@class"].should.equal(doc.embedded["@class"]);
       this.record.embedded["name"].should.equal(doc.embedded["name"]);
     });
+  })
+describe("Deserialize from disk", function () {
+
+    it('should Deserialize from disk content', function (done) {
+      fs.readFile("./test/record.bin", function (err, data) {
+
+        if (!err) {
+
+          var input = new Buffer(data, "binary");
+          this.record = native.deserialize(input, RecordID, Bag, true);
+          console.log(this.record);
+          done();
+        }
+      })
+    })
   })
 });
