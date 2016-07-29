@@ -22,7 +22,9 @@ describe("Serialization Native ", function () {
 
     it('should Deserialize a simple document', function () {
 
-      this.record = native.deserialize(this.serialized, RecordID, Bag, true);
+      this.record = native.deserialize(this.serialized, RecordID, Bag,function(){
+
+      }, true);
       this.record['@class'].should.equal(doc['@class']);
       this.record.name.should.equal(doc.name);
       this.record.empty.should.equal("");
@@ -50,7 +52,7 @@ describe("Serialization Native ", function () {
     });
 
     it('should Deserialize a simple document', function () {
-      this.record = native.deserialize(this.serialized, RecordID, Bag, true);
+      this.record = native.deserialize(this.serialized, RecordID, Bag,function(){}, true);
 
       this.record.tags.should.be.instanceof(Array)
       this.record.tags.should.containDeep(doc.tags);
@@ -72,8 +74,11 @@ describe("Deserialize from disk", function () {
         if (!err) {
 
           var input = new Buffer(data, "binary");
-          this.record = native.deserialize(input, RecordID, Bag, true);
-          console.log(this.record);
+          this.record = native.deserialize(input, RecordID, Bag,function(){
+
+          }, true);
+
+          
           done();
         }
       })
