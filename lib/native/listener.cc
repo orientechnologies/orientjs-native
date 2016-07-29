@@ -79,6 +79,7 @@ void TrackerListener::decimalValue(int scale, const char *bytes, int bytes_lengt
 
 	Nan::MaybeLocal<v8::Value> maybeVal = Nan::Call(decimalFactory,context,2,handles);
 
+
 	if(!maybeVal.IsEmpty()){
 		v8::Local<v8::Value> val = maybeVal.ToLocalChecked();
   	setValue(val);

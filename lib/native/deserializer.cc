@@ -15,7 +15,7 @@ void Deserialize(const Nan::FunctionCallbackInfo<v8::Value>& info){
   v8::Local<v8::Function> ridFactory= v8::Local<v8::Function>::Cast(info[1]);
   v8::Local<v8::Function> bagFactory= v8::Local<v8::Function>::Cast(info[2]);
   v8::Local<v8::Function> decimalFactory= v8::Local<v8::Function>::Cast(info[3]);
-  v8::Local<v8::Boolean> useRidbag= info[3]->ToBoolean();
+  v8::Local<v8::Boolean> useRidbag= info[4]->ToBoolean();
   TrackerListener listener(ridFactory,bagFactory,decimalFactory ,useRidbag->Value());
   reader.parse((unsigned char *)content,len,listener);
 
