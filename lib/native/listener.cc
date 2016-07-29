@@ -75,8 +75,16 @@ void TrackerListener::decimalValue(int scale, const char *bytes, int bytes_lengt
 	handles[0] = buffer;
 	handles[1] = sca;
 	v8::Local<v8::Object> context = Nan::GetCurrentContext()->Global();
-	v8::Local<v8::Value> val = Nan::Call(decimalFactory,context,2,handles).ToLocalChecked();
-	setValue(val);
+
+
+	Nan::MaybeLocal<v8::Value> maybeVal = Nan::Call(decimalFactory,context,2,handles);
+
+	if(!maybeVal.IsEmpty()){
+		v8::Local<v8::Value> val = maybeVal.ToLocalChecked();
+  	setValue(val);
+	}
+
+
 }
 
 void TrackerListener::dateValue(long long value) {
