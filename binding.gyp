@@ -19,7 +19,14 @@
                       'xcode_settings': {
                         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
                       }
-                    }]
+                    }],
+		    [ 'OS=="win"', {
+			          'link_settings': {
+					'libraries': [
+				              '-lws2_32.lib'
+            				],
+				}
+		    }]
                   ]
     }
   ]
