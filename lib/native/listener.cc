@@ -102,7 +102,7 @@ void TrackerListener::linkValue(struct Link &value) {
 	cur->Set(Nan::New("position").ToLocalChecked(), Nan::New<v8::Number>(value.position));
 	v8::Handle<v8::Value> handles[1];
 	handles[0] = cur;
-	setValue(ridFactory->NewInstance(1,handles));
+	setValue(Nan::NewInstance(ridFactory,1,handles).ToLocalChecked());
 }
 
 void TrackerListener::startCollection(int size,OType type) {
@@ -110,7 +110,7 @@ void TrackerListener::startCollection(int size,OType type) {
 	if(type == LINKBAG && useRidBag) {
 		v8::Handle<v8::Value> handles[1];
 		handles[0] = Nan::Null();
-		v8::Local<v8::Object> bag = bagFactory->NewInstance(1,handles);
+		v8::Local<v8::Object> bag = Nan::NewInstance(bagFactory,1,handles).ToLocalChecked();
 		bag->Set(Nan::New("_content").ToLocalChecked(), cur);
 		bag->Set(Nan::New("_type").ToLocalChecked(), Nan::New<v8::Number>(0));
 		bag->Set(Nan::New("_size").ToLocalChecked(), Nan::New<v8::Number>(size));
@@ -133,7 +133,7 @@ void TrackerListener::mapKey(const char *key,size_t key_size) {
 void TrackerListener::ridBagTreeKey(long long fileId,long long pageIndex,long pageOffset) {
 	v8::Handle<v8::Value> handles[1];
 	handles[0] = Nan::Null();
-	v8::Local<v8::Object> bag = bagFactory->NewInstance(1,handles);
+	v8::Local<v8::Object> bag = Nan::NewInstance(bagFactory,1,handles).ToLocalChecked();
 	bag->Set(Nan::New("_type").ToLocalChecked(), Nan::New<v8::Number>(1));
 	bag->Set(Nan::New("_fileId").ToLocalChecked(), Nan::New<v8::Number>(fileId));
 	bag->Set(Nan::New("_pageIndex").ToLocalChecked(), Nan::New<v8::Number>(pageIndex));

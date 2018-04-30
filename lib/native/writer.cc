@@ -54,9 +54,9 @@ void writeValue(v8::Local<v8::Value> value, Orient::RecordWriter & writer) {
 		v8::String::Utf8Value sval(value->ToString());
 		writer.stringValue(*sval);
 	} else if (value->IsInt32()){
-		writer.intValue(value->ToInt32()->Value());
+		writer.intValue(value->ToInt32(Nan::GetCurrentContext()).ToLocalChecked()->Value());
 	} else if (value->IsNumber()){
-		v8::Local<v8::Number> num = value->ToNumber();
+		v8::Local<v8::Number> num = value->ToNumber(Nan::GetCurrentContext()).ToLocalChecked();
 		double val = num->Value();
 		if(ceil(val) != 0 )
 			writer.doubleValue(val);
@@ -84,13 +84,13 @@ void writeValue(v8::Local<v8::Value> value, Orient::RecordWriter & writer) {
 			v8::Local<v8::String> dVal = Nan::New("d").ToLocalChecked();
 			v8::Local<v8::Object> obj = value->ToObject();
 
-			v8::String::Utf8Value val1(obj->ObjectProtoToString());
+			v8::String::Utf8Value val1(obj->ObjectProtoToString(Nan::GetCurrentContext()).ToLocalChecked());
 			if(obj->Has(typeKey) && obj->Get(typeKey)->Equals(dVal)){
 				writeObject(obj,writer);
 			} else if(obj->Has(clusterKey) && obj->Has(positionKey)){
 				struct Orient::Link lnk;
-				lnk.cluster = obj->Get(clusterKey)->ToNumber()->Value();
-				lnk.position = obj->Get(positionKey)->ToNumber()->Value();
+				lnk.cluster = obj->Get(clusterKey)->ToNumber(Nan::GetCurrentContext()).ToLocalChecked()->Value();
+				lnk.position = obj->Get(positionKey)->ToNumber(Nan::GetCurrentContext()).ToLocalChecked()->Value();
 				writer.linkValue(lnk);
 			} else {
 				writeMap(obj,writer);
