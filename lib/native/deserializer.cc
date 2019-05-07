@@ -15,7 +15,7 @@ void Deserialize(const Nan::FunctionCallbackInfo<v8::Value>& info){
   v8::Local<v8::Function> ridFactory= v8::Local<v8::Function>::Cast(info[1]);
   v8::Local<v8::Function> bagFactory= v8::Local<v8::Function>::Cast(info[2]);
   v8::Local<v8::Function> decimalFactory= v8::Local<v8::Function>::Cast(info[3]);
-  v8::Local<v8::Boolean> useRidbag= info[4]->ToBoolean();
+  v8::Local<v8::Boolean> useRidbag= Nan::To<v8::Boolean>(info[4]).ToLocalChecked();
   TrackerListener listener(ridFactory,bagFactory,decimalFactory ,useRidbag->Value());
   reader.parse((unsigned char *)content,len,listener);
 
@@ -37,10 +37,12 @@ void Serialize(const Nan::FunctionCallbackInfo<v8::Value>& info){
 }
 
 void Init(v8::Local<v8::Object> exports,v8::Local<v8::Object> module) {
-  exports->Set(Nan::New("deserialize").ToLocalChecked(),
-        Nan::New<v8::FunctionTemplate>(Deserialize)->GetFunction());
-  exports->Set(Nan::New("serialize").ToLocalChecked(),
-        Nan::New<v8::FunctionTemplate>(Serialize)->GetFunction());
+  
+
+  Nan::Set(exports,Nan::New("deserialize").ToLocalChecked(),
+        Nan::GetFunction(Nan::New<v8::FunctionTemplate>(Deserialize)).ToLocalChecked());
+  Nan::Set(exports,Nan::New("serialize").ToLocalChecked(),
+        Nan::GetFunction(Nan::New<v8::FunctionTemplate>(Serialize)).ToLocalChecked());
 }
 
 NODE_MODULE(deserializer, Init)

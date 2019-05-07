@@ -14,9 +14,10 @@ void TrackerListener::startDocument(const char * name,size_t name_length) {
 		obj = cur;
 	this->stack.push_front(cur);
 
-	if(name_length > 0)
-		this->stack.front()->Set(Nan::New("@class").ToLocalChecked(), Nan::New(name,name_length).ToLocalChecked());
-	this->stack.front()->Set(Nan::New("@type").ToLocalChecked(), Nan::New("d").ToLocalChecked());
+	if(name_length > 0){
+		Nan::Set(this->stack.front(),Nan::New("@class").ToLocalChecked(), Nan::New(name,name_length).ToLocalChecked());
+	}
+	Nan::Set(this->stack.front(),Nan::New("@type").ToLocalChecked(), Nan::New("d").ToLocalChecked());
 }
 
 void TrackerListener::endDocument() {
@@ -98,9 +99,12 @@ void TrackerListener::dateTimeValue(long long value) {
 
 void TrackerListener::linkValue(struct Link &value) {
 	v8::Local<v8::Object> cur = Nan::New<v8::Object>();
-	cur->Set(Nan::New("cluster").ToLocalChecked(),Nan::New<v8::Number>(value.cluster));
-	cur->Set(Nan::New("position").ToLocalChecked(), Nan::New<v8::Number>(value.position));
-	v8::Handle<v8::Value> handles[1];
+
+	
+	Nan::Set(cur,Nan::New("cluster").ToLocalChecked(), Nan::New<v8::Number>(value.cluster));
+	Nan::Set(cur,Nan::New("position").ToLocalChecked(), Nan::New<v8::Number>(value.position));
+
+	v8::Local<v8::Value> handles[1];
 	handles[0] = cur;
 	setValue(Nan::NewInstance(ridFactory,1,handles).ToLocalChecked());
 }
@@ -108,12 +112,15 @@ void TrackerListener::linkValue(struct Link &value) {
 void TrackerListener::startCollection(int size,OType type) {
 	v8::Local<v8::Object> cur = Nan::New<v8::Array>();
 	if(type == LINKBAG && useRidBag) {
-		v8::Handle<v8::Value> handles[1];
+		v8::Local<v8::Value> handles[1];
 		handles[0] = Nan::Null();
 		v8::Local<v8::Object> bag = Nan::NewInstance(bagFactory,1,handles).ToLocalChecked();
-		bag->Set(Nan::New("_content").ToLocalChecked(), cur);
-		bag->Set(Nan::New("_type").ToLocalChecked(), Nan::New<v8::Number>(0));
-		bag->Set(Nan::New("_size").ToLocalChecked(), Nan::New<v8::Number>(size));
+
+		Nan::Set(bag,Nan::New("_content").ToLocalChecked(), cur);
+		Nan::Set(bag,Nan::New("_type").ToLocalChecked(), Nan::New<v8::Number>(0));
+		Nan::Set(bag,Nan::New("_size").ToLocalChecked(), Nan::New<v8::Number>(size));
+
+
 		setValue(bag);
 	} else
 		setValue(cur);
@@ -131,14 +138,16 @@ void TrackerListener::mapKey(const char *key,size_t key_size) {
 }
 
 void TrackerListener::ridBagTreeKey(long long fileId,long long pageIndex,long pageOffset) {
-	v8::Handle<v8::Value> handles[1];
+	v8::Local<v8::Value> handles[1];
 	handles[0] = Nan::Null();
 	v8::Local<v8::Object> bag = Nan::NewInstance(bagFactory,1,handles).ToLocalChecked();
-	bag->Set(Nan::New("_type").ToLocalChecked(), Nan::New<v8::Number>(1));
-	bag->Set(Nan::New("_fileId").ToLocalChecked(), Nan::New<v8::Number>(fileId));
-	bag->Set(Nan::New("_pageIndex").ToLocalChecked(), Nan::New<v8::Number>(pageIndex));
-	bag->Set(Nan::New("_pageOffset").ToLocalChecked(), Nan::New<v8::Number>(pageOffset));
-	bag->Set(Nan::New("_size").ToLocalChecked(), Nan::New<v8::Number>(0));
+
+	Nan::Set(bag,Nan::New("_type").ToLocalChecked(), Nan::New<v8::Number>(1));
+	Nan::Set(bag,Nan::New("_fileId").ToLocalChecked(), Nan::New<v8::Number>(fileId));
+	Nan::Set(bag,Nan::New("_pageIndex").ToLocalChecked(), Nan::New<v8::Number>(pageIndex));
+	Nan::Set(bag,Nan::New("_pageOffset").ToLocalChecked(), Nan::New<v8::Number>(pageOffset));
+	Nan::Set(bag,Nan::New("_size").ToLocalChecked(), Nan::New<v8::Number>(0));
+
 	//TODO: check if the value is set in the correct place
 	setValue(bag);
 }
@@ -155,11 +164,13 @@ void TrackerListener::endCollection(OType type) {
 	this->stack.pop_front();
 }
 
-void TrackerListener::setValue(v8::Handle<v8::Value> value) {
+void TrackerListener::setValue(v8::Local<v8::Value> value) {
 	if(this->stack.front()->IsArray()){
 		v8::Local<v8::Array> arr = v8::Local<v8::Array>::Cast(this->stack.front());
-		arr->Set(arr->Length(),value);
-	} else this->stack.front()->Set(this->field_name, value);
+		Nan::Set(arr,arr->Length(),value);		
+	} else  {
+		Nan::Set(this->stack.front(),this->field_name, value);
+	}
 }
 
 

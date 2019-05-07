@@ -32,7 +32,7 @@ public:
 	virtual void nullValue();
 	virtual void endMap(OType type);
 	virtual void endCollection(OType type);
-	void setValue(v8::Handle<v8::Value> value);
+	void setValue(v8::Local<v8::Value> value);
 	v8::Local<v8::String> field_name;
 	OType type;
 

@@ -12,18 +12,16 @@ void writeValue(v8::Local<v8::Value> value, Orient::RecordWriter & writer);
 void writeObject(v8::Local<v8::Object> toWrite,Orient::RecordWriter & writer){
 
 	v8::Local<v8::String> classKey = Nan::New("@class").ToLocalChecked();
-	if(toWrite->Has(classKey)){
-		v8::Local<v8::Value> val = toWrite->Get(classKey);
+	if(Nan::Has(toWrite,classKey).FromJust()){
+		v8::Local<v8::Value> val = Nan::Get(toWrite,classKey).ToLocalChecked();
 		if(val->IsString()){
-			v8::Local<v8::String> clazz = val->ToString();
-			v8::String::Utf8Value clazzVal(clazz);
+			Nan::Utf8String clazzVal(val);
 			writer.startDocument(*clazzVal);
 		}else if(val->IsObject()) {
 			v8::Local<v8::String> nameKey = Nan::New("name").ToLocalChecked();
-			v8::Local<v8::Object> classObj = val->ToObject();
-			if(classObj->Has(nameKey)){
-				v8::Local<v8::String> clazz = classObj->Get(nameKey)->ToString();
-				v8::String::Utf8Value clazzVal(clazz);
+			v8::Local<v8::Object> classObj = val->ToObject(Nan::GetCurrentContext()).ToLocalChecked();
+			if(Nan::Has(classObj, nameKey).FromJust()){
+				Nan::Utf8String clazzVal(Nan::Get(classObj,nameKey).ToLocalChecked());
 				writer.startDocument(*clazzVal);
 			}else 
 				writer.startDocument("");
@@ -32,14 +30,16 @@ void writeObject(v8::Local<v8::Object> toWrite,Orient::RecordWriter & writer){
 	} else {
 		writer.startDocument("");
 	}
-	v8::Local<v8::Array> properties = toWrite->GetPropertyNames();
+	v8::Local<v8::Array> properties = toWrite->GetPropertyNames(Nan::GetCurrentContext()).ToLocalChecked();
 	unsigned int  i;
 	for(i = 0; i< properties->Length() ; i ++){
-		v8::Local<v8::String> name = v8::Local<v8::String>::Cast(properties->Get(i));
-		v8::String::Utf8Value val(name);
+
+		v8::Local<v8::String> name = v8::Local<v8::String>::Cast(Nan::Get(properties,i).ToLocalChecked());
+		Nan::Utf8String val(Nan::Get(properties,i).ToLocalChecked());
+		// v8::String::Utf8Value val(name);
 		if((*val)[0] != '@') {
 			writer.startField(*val);
-			v8::Local<v8::Value> value = toWrite->Get(name);
+			v8::Local<v8::Value> value = Nan::Get(toWrite,name).ToLocalChecked();
 			writeValue(value,writer);
 			writer.endField(*val);
 		}
@@ -51,7 +51,7 @@ void writeObject(v8::Local<v8::Object> toWrite,Orient::RecordWriter & writer){
 void writeValue(v8::Local<v8::Value> value, Orient::RecordWriter & writer) {
 
 	if(value->IsString()){
-		v8::String::Utf8Value sval(value->ToString());
+		Nan::Utf8String sval(value);
 		writer.stringValue(*sval);
 	} else if (value->IsInt32()){
 		writer.intValue(value->ToInt32(Nan::GetCurrentContext()).ToLocalChecked()->Value());
@@ -63,34 +63,27 @@ void writeValue(v8::Local<v8::Value> value, Orient::RecordWriter & writer) {
 		else
 			writer.longValue(val);
 	} else if (value->IsDate()){
-		long long int date= v8::Local<v8::Date>::Cast(value)->NumberValue();
+		long long int date= v8::Local<v8::Date>::Cast(value)->NumberValue(Nan::GetCurrentContext()).FromJust();
 		writer.dateTimeValue(date);
 	} else if (value->IsNull()){
 		writer.nullValue();
 	} else if (value->IsBoolean()){
-		writer.booleanValue(value->ToBoolean()->Value());
+		writer.booleanValue(Nan::To<v8::Boolean>(value).ToLocalChecked()->Value());
 	} else if (value->IsArray()){
 		writeArray(v8::Local<v8::Array>::Cast(value), writer);
 	}  else if (value->IsObject()){
-
-	//		if(value->IsUint8Array()){
-	//        			writeBinary(value,writer);
-	//    		}else {
-
 			v8::Local<v8::String> typeKey = Nan::New("@type").ToLocalChecked();
       			//TODO: check if replace with RecordID prototype check
 			v8::Local<v8::String> clusterKey = Nan::New("cluster").ToLocalChecked();
 			v8::Local<v8::String> positionKey = Nan::New("position").ToLocalChecked();
 			v8::Local<v8::String> dVal = Nan::New("d").ToLocalChecked();
-			v8::Local<v8::Object> obj = value->ToObject();
-
-			v8::String::Utf8Value val1(obj->ObjectProtoToString(Nan::GetCurrentContext()).ToLocalChecked());
-			if(obj->Has(typeKey) && obj->Get(typeKey)->Equals(dVal)){
+			v8::Local<v8::Object> obj = value->ToObject(Nan::GetCurrentContext()).ToLocalChecked();
+			if(Nan::Has(obj,typeKey).FromJust() && Nan::Get(obj,typeKey).ToLocalChecked()->Equals(Nan::GetCurrentContext(),dVal).FromJust()){
 				writeObject(obj,writer);
-			} else if(obj->Has(clusterKey) && obj->Has(positionKey)){
+			} else if(Nan::Has(obj,clusterKey).FromJust() && Nan::Has(obj,positionKey).FromJust()){
 				struct Orient::Link lnk;
-				lnk.cluster = obj->Get(clusterKey)->ToNumber(Nan::GetCurrentContext()).ToLocalChecked()->Value();
-				lnk.position = obj->Get(positionKey)->ToNumber(Nan::GetCurrentContext()).ToLocalChecked()->Value();
+				lnk.cluster = Nan::Get(obj,clusterKey).ToLocalChecked()->ToNumber(Nan::GetCurrentContext()).ToLocalChecked()->Value();
+				lnk.position = Nan::Get(obj,positionKey).ToLocalChecked()->ToNumber(Nan::GetCurrentContext()).ToLocalChecked()->Value();
 				writer.linkValue(lnk);
 			} else {
 				writeMap(obj,writer);
@@ -100,14 +93,14 @@ void writeValue(v8::Local<v8::Value> value, Orient::RecordWriter & writer) {
 
 
 void writeMap(v8::Local<v8::Object> toWrite, Orient::RecordWriter & writer) {
-	v8::Local<v8::Array> properties = toWrite->GetPropertyNames();
+	v8::Local<v8::Array> properties = toWrite->GetPropertyNames(Nan::GetCurrentContext()).ToLocalChecked();
 	unsigned int  i;
 	writer.startMap(properties->Length(),Orient::EMBEDDEDMAP);
-	for(i = 0; i< properties->Length() ; i ++){
-		v8::Local<v8::String> name = v8::Local<v8::String>::Cast(properties->Get(i));
-		v8::String::Utf8Value val(name);
+	for(i = 0; i< properties->Length() ; i ++){		
+		v8::Local<v8::String> name = v8::Local<v8::String>::Cast(Nan::Get(properties,i).ToLocalChecked());
+		Nan::Utf8String val(Nan::Get(properties,i).ToLocalChecked());
 		writer.mapKey(*val);
-		v8::Local<v8::Value> value = toWrite->Get(name);
+		v8::Local<v8::Value> value = Nan::Get(toWrite,name).ToLocalChecked();
 		writeValue(value,writer);
 	}
 	writer.endMap(Orient::EMBEDDEDMAP);
@@ -118,7 +111,7 @@ void writeArray(v8::Local<v8::Array> toWrite, Orient::RecordWriter & writer){
 	unsigned int  i;
 	writer.startCollection(toWrite->Length(),Orient::EMBEDDEDLIST);
 	for(i = 0; i< toWrite->Length() ; i ++){
-		v8::Local<v8::Value> value = toWrite->Get(i);
+		v8::Local<v8::Value> value = Nan::Get(toWrite,i).ToLocalChecked();
 		writeValue(value,writer);
 	}
 	writer.endCollection(Orient::EMBEDDEDLIST);
