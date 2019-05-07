@@ -1,3 +1,5 @@
 .vscode
 .travis.yml
-.appveyor.yml
+appveyor.yml
+build
+
