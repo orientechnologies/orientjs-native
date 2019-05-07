@@ -1,6 +1,6 @@
 {
   "name": "orientjs-native",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
@@ -9,15 +9,15 @@
   "gypfile": true,
   "dependencies": {
     "bindings": "~1.2.1",
-    "nan": "^2.10.0"
+    "nan": "^2.13.2"
   },
   "devDependencies": {
-    "mocha": "^2.0.1",
-    "should": "~4.6.2",
-    "orientjs": "~2.2.0",
     "expect.js": "~0.3.1",
     "istanbul": "~0.2.7",
-    "jshint": "~2.5.0"
+    "jshint": "^2.10.2",
+    "mocha": "^2.0.1",
+    "orientjs": "~2.2.0",
+    "should": "~4.6.2"
   },
   "repository": {
     "type": "git",
