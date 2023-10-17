@@ -8,16 +8,16 @@
   },
   "gypfile": true,
   "dependencies": {
-    "bindings": "~1.2.1",
+    "bindings": "~1.5.0",
     "nan": "^2.13.2"
   },
   "devDependencies": {
     "expect.js": "~0.3.1",
-    "istanbul": "~0.2.7",
+    "istanbul": "~0.4.5",
     "jshint": "^2.10.2",
-    "mocha": "^2.0.1",
-    "orientjs": "~2.2.0",
-    "should": "~4.6.2"
+    "mocha": "^10.2.0",
+    "orientjs": "~3.0.11",
+    "should": "~13.2.3"
   },
   "repository": {
     "type": "git",
